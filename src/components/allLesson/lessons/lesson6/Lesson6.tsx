@@ -1,18 +1,24 @@
-import { Col, Form, Input, Row, Select, SelectProps } from "antd";
+import { Col, Form, Input, Row, Select } from "antd";
 import AddMoreFilter from "./AddMoreFilter";
 import { useEffect, useState } from "react";
 import { LockOutlined, MinusOutlined, UnlockOutlined } from "@ant-design/icons";
+import useQuery from "../../../../hooks/useQuery";
+import { useNavigate } from "react-router-dom";
 
 const Lesson6 = () => {
+  const { setQuery, removeQueryParams } = useQuery();
+  const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [filterContent, setFilterContent] = useState<any>({
-    freeText: "",
-    operatorsOrder: [],
-    filterWithConditions: [],
-    filterListId: 0,
-  });
+  // const initialFilterState = {
+  //   freeText: "",
+  //   operatorsOrder: [],
+  //   filterWithConditions: [{ condition: "", field: "", value: "" }],
+  //   filterListId: 0,
+  // };
+  const [filterContent, setFilterContent] = useState<any>();
   const [tagContent, setTagContent] = useState<any>([]);
   const [unlockTag, setUnlockTag] = useState<any>([]);
+  const [queryString, setQueryString] = useState<any>("");
   const [selectTag, setSelectTag] = useState<any>([]);
   const initialsValue: any = {
     search: "",
@@ -74,7 +80,7 @@ const Lesson6 = () => {
     setSelectTag(newTag);
     setUnlockTag(newTag);
     let result = newTag.map((a: any) => a.name);
-    console.log(result);
+    // console.log(result);
     form.setFieldsValue({
       tag: result,
     });
@@ -90,12 +96,11 @@ const Lesson6 = () => {
         isLock: false,
       });
     });
-    // setUnlockTag(tagConvert);
     setSelectTag(tagConvert);
   };
-  console.log("onchange", selectTag);
 
   const onFinish = (value: any) => {
+    // console.log("value", value);
     const operator = value.filter
       .map((item: { operatorsOrder: any }) => item.operatorsOrder)
       .filter(Boolean);
@@ -105,18 +110,38 @@ const Lesson6 = () => {
       filterWithConditions: value.filter.map(
         (item: { condition: any; field: any; value: any }) => {
           return {
-            consition: item.condition,
-            field: item.field,
-            value: item.value,
+            consition: item.condition ?? "",
+            field: item.field ?? "",
+            value: item.value ?? "",
           };
         }
       ),
       operatorsOrder: operator,
     });
-    setTagContent(value.tag.join(","));
+
+    const unlockTag = selectTag.filter((item: any) => item.isLock !== true);
+    let result = unlockTag.map((a: any) => a.name);
+    setTagContent(result.join(","));
   };
 
-  useEffect(() => {}, [selectTag]);
+  const handleReset = () => {
+    form.resetFields();
+    setFilterContent(undefined);
+    window.location.search = "";
+    navigate("/lesson/6");
+  };
+
+  useEffect(() => {
+    (() => {
+      if (filterContent) {
+        const query = "?filter" + "=" + JSON.stringify(filterContent);
+        console.log("query", query);
+        setQueryString(query);
+      }
+    })();
+    console.log(filterContent);
+    setQuery(queryString);
+  }, [selectTag, queryString, filterContent]);
 
   return (
     <div className="p-8 max-w-full relative">
@@ -160,37 +185,39 @@ const Lesson6 = () => {
                 options={options}
               />
             </Form.Item>
-            <div className="flex flex-row gap-3">
-              {selectTag.map((tag: any) => {
-                return (
-                  <div className="">
-                    <button className="flex items-center gap-1 px-3  py-1 rounded relative">
-                      <span className="">{tag.name}</span>
-                      <span></span>
-                      {tag.isLock ? (
-                        <LockOutlined
+            <Form.Item>
+              <div className="flex flex-row gap-3">
+                {selectTag.map((tag: any) => {
+                  return (
+                    <div className="">
+                      <button className="flex items-center gap-1 px-3  py-1 rounded relative">
+                        <span className="">{tag.name}</span>
+                        <span></span>
+                        {tag.isLock ? (
+                          <LockOutlined
+                            onClick={() => {
+                              handleLockChange(tag.name);
+                            }}
+                          />
+                        ) : (
+                          <UnlockOutlined
+                            onClick={() => {
+                              handleLockChange(tag.name);
+                            }}
+                          />
+                        )}
+                        <MinusOutlined
+                          className="absolute flex items-center justify-center w-5 h-5 bg-red-600 rounded-full cursor-pointer -top-2 -left-2"
                           onClick={() => {
-                            handleLockChange(tag.name);
+                            handleMinusTag(tag.name);
                           }}
                         />
-                      ) : (
-                        <UnlockOutlined
-                          onClick={() => {
-                            handleLockChange(tag.name);
-                          }}
-                        />
-                      )}
-                      <MinusOutlined
-                        className="absolute flex items-center justify-center w-5 h-5 bg-red-600 rounded-full cursor-pointer -top-2 -left-2"
-                        onClick={() => {
-                          handleMinusTag(tag.name);
-                        }}
-                      />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </Form.Item>
           </Col>
         </Row>
         <Row>
@@ -208,10 +235,16 @@ const Lesson6 = () => {
             <button
               className="py-3 text-white bg-green-300 rounded-md hover:bg-slate-400 px-9"
               type="submit"
+              // onClick={() => {
+              //   navigate('/');
+              // }}
             >
               Filter
             </button>
-            <button className="py-3 rounded px-9 hover:bg-slate-400">
+            <button
+              className="py-3 rounded px-9 hover:bg-slate-400"
+              onClick={handleReset}
+            >
               Clear
             </button>
           </div>
@@ -223,11 +256,13 @@ const Lesson6 = () => {
                 <span className=" py-4 border text-bold text-[16px]">
                   Filter
                 </span>
-                <p>{JSON.stringify(filterContent)}</p>
+                <p>{filterContent ? JSON.stringify(filterContent) : ""}</p>
               </div>
               <div className="w-full border-solid">
                 <span className=" py-4 border text-bold text-[16px]">Tags</span>
-                <p>{JSON.stringify(tagContent).slice(1, -1)}</p>
+                <p>
+                  {tagContent ? JSON.stringify(tagContent).slice(1, -1) : ""}
+                </p>
               </div>
             </div>
           </div>

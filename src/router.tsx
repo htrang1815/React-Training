@@ -36,7 +36,7 @@ const Router = () => {
             <Route path="3" element={<Lesson3 />}></Route>
             <Route path="4" element={<Lesson4 />}></Route>
             <Route path="5" element={<Lesson5 />}></Route>
-            <Route path="6" element={<Lesson6 />}></Route>
+            <Route path="6/*" element={<Lesson6 />}></Route>
           </Route>
         </>
       )}
