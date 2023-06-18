@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  font-family: "Inter", sans-serif;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.label-input {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  display: block;
+  margin-bottom: 8px;
+}
+.input {
+  /* background: rgb(249 250 251); */
+  border: solid rgb(209 213 219) 1px;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  width: 100%;
+  font-size: 14px;
+}
+.error {
+  .input {
+    border: solid #f15b5b 1px;
+    background: #fef2f2;
+    color: #c16c4b;
+  }
+  .label-input {
+    color: #b91c1c;
+  }
+}
+
+.message {
+  color: #ec0404;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 400;
+}
+.ant-picker {
+  padding: 7px;
+}
+.ant-form-item-explain-error {
+  color: #ec0404;
+  font-size: 12px;
+  font-weight: 400;
+}
+.ant-space {
+  width: 100%;
+}
+
+#restored ~ span {
+  display: none !important;
+}
+#restored::after {
+  display: none !important;
+}
+.ant-checkbox-wrapper {
+  width: 100%;
+}
+
+.ant-select-in-form-item .ant-select-selector {
+  border: solid black 1px !important;
+  padding: 7px 16px;
+  border-radius: 0 !important;
+  outline: none;
+  max-width: 431px;
+  line-height: 1.5714285714285714;
+  font-size: 14px;
+  /* border border-black py-[16px] max-w-[431px] rounded-none focus:border-primary outline-none */
+}
