@@ -11,10 +11,9 @@ const Lesson6 = () => {
   const [form] = Form.useForm();
   const [filterContent, setFilterContent] = useState<IFilterContent>();
   const [tagContent, setTagContent] = useState("");
-  const [unlockTag, setUnlockTag] = useState<ITag[]>([]);
   const [queryString, setQueryString] = useState("");
   const [selectTag, setSelectTag] = useState<ITag[]>([]);
-  console.log("🚀 ~ file: Lesson6.tsx:21 ~ Lesson6 ~ unlockTag:", unlockTag);
+
   const initialsValue = {
     search: "",
     tag: [],
@@ -28,15 +27,9 @@ const Lesson6 = () => {
   };
   interface IFilterContent {
     freetext: string;
-    tag: Array<string>;
-    filter: [
-      {
-        field: undefined;
-        condition: undefined;
-        value: undefined;
-      }
-    ];
-    operatorsOrder: [];
+    tag?: string[];
+    filter: IFilterWithConditions[];
+    operatorsOrder: string[];
   }
   interface ITag {
     key?: number;
@@ -47,16 +40,15 @@ const Lesson6 = () => {
     condition: string;
     field: string;
     value: string;
-    operatorsOrder: Array<string>;
+    operatorsOrder: string;
   }
-
   interface IForm {
     filter: IFilterWithConditions[];
-    operatorsOrder: [];
+    operatorsOrder: string[];
     filterListId: 0;
     search: string;
+    tag: ITag[];
   }
-
   const options = [
     {
       label: "trang",
@@ -100,16 +92,14 @@ const Lesson6 = () => {
 
     setSelectTag(changeLock);
   };
+
   const handleMinusTag = (tag: ITag) => {
     const newTag = selectTag.filter((item: ITag) => item.name !== tag.name);
     setSelectTag(newTag);
-    setUnlockTag(newTag);
     const result = newTag.map((a: ITag) => a.name);
-    // console.log(result);
     form.setFieldsValue({
       tag: result,
     });
-    console.log("minus", selectTag);
   };
 
   const handleChange = (value: string[]) => {
@@ -125,54 +115,90 @@ const Lesson6 = () => {
   };
 
   const onFinish = (value: IForm) => {
-    console.log(value);
+    console.log("value", JSON.stringify(value));
+
     const operator = value.filter
       .map((item: IFilterWithConditions) => item.operatorsOrder)
       .filter(Boolean);
-    // console.log(operator);
-    setFilterContent({
-      freetext: value.search,
-      filter: value.filter.map((item: IFilterWithConditions) => {
-        return {
-          consition: item.condition ?? "",
-          field: item.field ?? "",
-          value: item.value ?? "",
-        };
-      }),
-      operatorsOrder: operator,
-    });
 
-    const unlockTag = selectTag.filter((item: ITag) => item.isLock !== true);
-    const result = unlockTag.map((a: ITag) => a.name);
-    const unlock = result.join(",");
-    setTagContent(unlock);
+    //loai bo undefined
+    const query =
+      "?filter=" +
+      JSON.stringify({
+        freetext: value.search,
+        filter: value.filter.map((item: IFilterWithConditions) => {
+          return {
+            condition: item.condition ?? "",
+            field: item.field ?? "",
+            value: item.value ?? "",
+          };
+        }),
+        operatorsOrder: operator,
+      }) +
+      "&tag=" +
+      JSON.stringify(selectTag);
+    console.log(query);
+    setQuery(query);
+    setQueryString(query);
+    console.log(queryString);
   };
 
   const handleReset = () => {
     form.resetFields();
-    setFilterContent("");
     window.location.search = "";
     navigate("/lesson/6");
   };
 
   useEffect(() => {
-    (() => {
-      if (filterContent) {
-        const query = "?filter" + "=" + JSON.stringify(filterContent);
-        // console.log("query", query);
-        setQueryString(query);
-      }
-    })();
-    const queryParam: {
+    const filterParam: {
       [key: string]: string | null;
     } = getQuery(["filter"]);
-    if (queryParam) {
-      console.log(JSON.parse(queryParam.filter));
-    }
+    const tagParam: {
+      [key: string]: string | null;
+    }[] = getQuery(["tag"]);
+    // if (filterParam && filterParam.filter !== null) {
+    const filterParse = JSON.parse(filterParam?.filter);
+    const tagParse = JSON.parse(tagParam?.tag);
+    console.log(filterParse);
+    console.log(tagParse);
+    setTagContent(
+      tagParse
+        ?.map((item: ITag) => {
+          if (!item.isLock) {
+            return item.name;
+          }
+        })
+        .join(",")
+    );
 
-    console.log(filterContent);
-    setQuery(queryString);
-  }, [selectTag, queryString, filterContent]);
+    setFilterContent({
+      freetext: filterParse?.freetext,
+      filter: filterParse?.filter,
+      operatorsOrder: filterParse?.operatorsOrder,
+    });
+
+    form.setFieldsValue({
+      search: filterParse?.freetext ?? "",
+      tag: tagParse?.map((item: ITag) => item.name) ?? [],
+      filter: filterParse?.filter?.map(
+        (item: IFilterContent, index: number) => {
+          return {
+            ...item,
+            operatorsOrder: filterParse?.operatorsOrder[index - 1],
+          };
+        }
+      ) ?? [
+        {
+          field: undefined,
+          condition: undefined,
+          value: undefined,
+        },
+      ],
+      operatorsOrder: filterParse?.operatorsOrderord ?? "",
+    });
+
+    setSelectTag(tagParse);
+  }, [queryString]);
 
   return (
     <div className="p-8 max-w-full relative">
@@ -218,10 +244,10 @@ const Lesson6 = () => {
             </Form.Item>
             <Form.Item>
               <div className="flex flex-row gap-3">
-                {selectTag.map((tag: ITag) => {
+                {selectTag?.map((tag: ITag) => {
                   return (
                     <div key={tag.key}>
-                      <button className="flex items-center gap-1 px-3  py-1 rounded relative">
+                      <button className="flex items-center gap-1 px-3 py-1 rounded relative">
                         <span className="">{tag.name}</span>
                         <span></span>
                         {tag.isLock ? (
@@ -267,7 +293,7 @@ const Lesson6 = () => {
               className="py-3 text-white bg-green-300 rounded-md hover:bg-slate-400 px-9"
               type="submit"
               // onClick={() => {
-              //   navigate('/');
+              // navigate('/');
               // }}
             >
               Filter
@@ -282,7 +308,7 @@ const Lesson6 = () => {
         </Row>
         <Row>
           <div className="mt-10 w-full">
-            <div className="grid grid-cols-2 gap-5 w-full  ">
+            <div className="grid grid-cols-2 gap-5 w-full ">
               <div className=" w-full ">
                 <span className=" py-4 border text-bold text-[16px]">
                   Filter

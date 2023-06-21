@@ -11,7 +11,7 @@ const useQuery = () => {
   const setQuery = (queryObj: string) => {
     const newquery = new URLSearchParams(queryObj);
     navigate("?" + newquery.toString(), { replace: true });
-    // console.log("pathname", newquery);
+    console.log("pathname", newquery);
   };
 
   const getQuery = (query: string[]) => {
