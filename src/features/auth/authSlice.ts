@@ -1,21 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../store";
 
-interface AuthState {
-  value: boolean;
-}
-const initialState: AuthState = {
-  value: false,
-};
-
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
-    value: false,
+    value: localStorage.getItem("isAuth"),
   },
   reducers: {
     setAuth: (state, action) => {
       state.value = action.payload;
+      localStorage.setItem("isAuth", action.payload);
+      console.log("action.payload", action.payload);
     },
   },
 });

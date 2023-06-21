@@ -1,7 +1,18 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "../nav/NavBar";
+import { useDispatch } from "react-redux";
+import { setAuth } from "../../features/auth/authSlice";
 
 const AllLessonPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout: React.FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+
+    dispatch(setAuth(false));
+    // localStorage.setItem("isAuth", "true");
+    navigate("/auth/sign-in");
+  };
   return (
     <div className="h-screen">
       <div className="border border-solid border-[#ccc] flex justify-between items-center px-4 top-0 z-50 bg-white py-2">
@@ -16,7 +27,10 @@ const AllLessonPage = () => {
         <b className="font-[700] text-[16px] text-[#000000]">
           Bài thực hành react ( ts required )
         </b>
-        <button className="bg-blue-400 text-white text-sm px-3 rounded py-2 h-fit">
+        <button
+          className="bg-blue-400 text-white text-sm px-3 rounded py-2 h-fit"
+          onClick={handleLogout}
+        >
           Logout
         </button>
       </div>

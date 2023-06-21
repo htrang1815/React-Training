@@ -1,19 +1,22 @@
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setAuth } from "../../features/auth/authSlice";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data: any) => {
-    if (data) {
-      localStorage.setItem("isAuth", "true");
-      navigate("/welcome");
-    }
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = () => {
+    // event.preventDefault();
+    console.log("login");
+    dispatch(setAuth(true));
+    // localStorage.setItem("isAuth", "true");
+    navigate("/welcome");
   };
 
   return (

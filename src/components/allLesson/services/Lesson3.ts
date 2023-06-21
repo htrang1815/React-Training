@@ -3,7 +3,7 @@ import { SexType, faker } from "@faker-js/faker";
 const Lesson3Data = () => {
   type SubscriptionTier = "free" | "basic" | "business";
   interface User {
-    _id: string;
+    _id: number;
     avatar: string;
     age: number;
     birthday: Date;
@@ -17,14 +17,14 @@ const Lesson3Data = () => {
     subscriptionTier: SubscriptionTier;
   }
 
-  function createRandomUser(i: any): User {
+  function createRandomUser(i: number): User {
     const date = new Date();
     const birthday = faker.date.birthdate();
     return {
       _id: i,
       avatar: faker.image.avatar(),
       birthday,
-      age: date.getFullYear() - birthday.getFullYear(),
+      age: (date.getFullYear() - birthday.getFullYear()),
       email: faker.internet.email(),
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),

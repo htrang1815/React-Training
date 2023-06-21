@@ -6,21 +6,16 @@ import useQuery from "../../../../hooks/useQuery";
 import { useNavigate } from "react-router-dom";
 
 const Lesson6 = () => {
-  const { setQuery, removeQueryParams } = useQuery();
+  const { setQuery, getQuery } = useQuery();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  // const initialFilterState = {
-  //   freeText: "",
-  //   operatorsOrder: [],
-  //   filterWithConditions: [{ condition: "", field: "", value: "" }],
-  //   filterListId: 0,
-  // };
-  const [filterContent, setFilterContent] = useState<any>();
-  const [tagContent, setTagContent] = useState<any>([]);
-  const [unlockTag, setUnlockTag] = useState<any>([]);
-  const [queryString, setQueryString] = useState<any>("");
-  const [selectTag, setSelectTag] = useState<any>([]);
-  const initialsValue: any = {
+  const [filterContent, setFilterContent] = useState<IFilterContent>();
+  const [tagContent, setTagContent] = useState("");
+  const [unlockTag, setUnlockTag] = useState<ITag[]>([]);
+  const [queryString, setQueryString] = useState("");
+  const [selectTag, setSelectTag] = useState<ITag[]>([]);
+  console.log("🚀 ~ file: Lesson6.tsx:21 ~ Lesson6 ~ unlockTag:", unlockTag);
+  const initialsValue = {
     search: "",
     tag: [],
     filter: [
@@ -31,6 +26,36 @@ const Lesson6 = () => {
       },
     ],
   };
+  interface IFilterContent {
+    freetext: string;
+    tag: Array<string>;
+    filter: [
+      {
+        field: undefined;
+        condition: undefined;
+        value: undefined;
+      }
+    ];
+    operatorsOrder: [];
+  }
+  interface ITag {
+    key?: number;
+    name?: string;
+    isLock?: boolean;
+  }
+  interface IFilterWithConditions {
+    condition: string;
+    field: string;
+    value: string;
+    operatorsOrder: Array<string>;
+  }
+
+  interface IForm {
+    filter: IFilterWithConditions[];
+    operatorsOrder: [];
+    filterListId: 0;
+    search: string;
+  }
 
   const options = [
     {
@@ -65,9 +90,9 @@ const Lesson6 = () => {
     },
   ];
 
-  const handleLockChange = (tag: any) => {
-    const changeLock: any = selectTag?.map((item: any) => {
-      if (item.name === tag) {
+  const handleLockChange = (tag: ITag) => {
+    const changeLock = selectTag?.map((item: ITag) => {
+      if (item.name === tag.name) {
         return { ...item, isLock: !item.isLock };
       }
       return item;
@@ -75,11 +100,11 @@ const Lesson6 = () => {
 
     setSelectTag(changeLock);
   };
-  const handleMinusTag = (tag: any) => {
-    const newTag = selectTag.filter((item: any) => item.name !== tag);
+  const handleMinusTag = (tag: ITag) => {
+    const newTag = selectTag.filter((item: ITag) => item.name !== tag.name);
     setSelectTag(newTag);
     setUnlockTag(newTag);
-    let result = newTag.map((a: any) => a.name);
+    const result = newTag.map((a: ITag) => a.name);
     // console.log(result);
     form.setFieldsValue({
       tag: result,
@@ -88,7 +113,7 @@ const Lesson6 = () => {
   };
 
   const handleChange = (value: string[]) => {
-    const tagConvert: { key: number; name: string; isLock: boolean }[] = [];
+    const tagConvert: ITag[] = [];
     value.forEach((item, id) => {
       tagConvert.push({
         key: id,
@@ -99,34 +124,33 @@ const Lesson6 = () => {
     setSelectTag(tagConvert);
   };
 
-  const onFinish = (value: any) => {
-    // console.log("value", value);
+  const onFinish = (value: IForm) => {
+    console.log(value);
     const operator = value.filter
-      .map((item: { operatorsOrder: any }) => item.operatorsOrder)
+      .map((item: IFilterWithConditions) => item.operatorsOrder)
       .filter(Boolean);
+    // console.log(operator);
     setFilterContent({
-      ...filterContent,
-      freeText: value.search,
-      filterWithConditions: value.filter.map(
-        (item: { condition: any; field: any; value: any }) => {
-          return {
-            consition: item.condition ?? "",
-            field: item.field ?? "",
-            value: item.value ?? "",
-          };
-        }
-      ),
+      freetext: value.search,
+      filter: value.filter.map((item: IFilterWithConditions) => {
+        return {
+          consition: item.condition ?? "",
+          field: item.field ?? "",
+          value: item.value ?? "",
+        };
+      }),
       operatorsOrder: operator,
     });
 
-    const unlockTag = selectTag.filter((item: any) => item.isLock !== true);
-    let result = unlockTag.map((a: any) => a.name);
-    setTagContent(result.join(","));
+    const unlockTag = selectTag.filter((item: ITag) => item.isLock !== true);
+    const result = unlockTag.map((a: ITag) => a.name);
+    const unlock = result.join(",");
+    setTagContent(unlock);
   };
 
   const handleReset = () => {
     form.resetFields();
-    setFilterContent(undefined);
+    setFilterContent("");
     window.location.search = "";
     navigate("/lesson/6");
   };
@@ -135,10 +159,17 @@ const Lesson6 = () => {
     (() => {
       if (filterContent) {
         const query = "?filter" + "=" + JSON.stringify(filterContent);
-        console.log("query", query);
+        // console.log("query", query);
         setQueryString(query);
       }
     })();
+    const queryParam: {
+      [key: string]: string | null;
+    } = getQuery(["filter"]);
+    if (queryParam) {
+      console.log(JSON.parse(queryParam.filter));
+    }
+
     console.log(filterContent);
     setQuery(queryString);
   }, [selectTag, queryString, filterContent]);
@@ -187,29 +218,29 @@ const Lesson6 = () => {
             </Form.Item>
             <Form.Item>
               <div className="flex flex-row gap-3">
-                {selectTag.map((tag: any) => {
+                {selectTag.map((tag: ITag) => {
                   return (
-                    <div className="">
+                    <div key={tag.key}>
                       <button className="flex items-center gap-1 px-3  py-1 rounded relative">
                         <span className="">{tag.name}</span>
                         <span></span>
                         {tag.isLock ? (
                           <LockOutlined
                             onClick={() => {
-                              handleLockChange(tag.name);
+                              handleLockChange(tag);
                             }}
                           />
                         ) : (
                           <UnlockOutlined
                             onClick={() => {
-                              handleLockChange(tag.name);
+                              handleLockChange(tag);
                             }}
                           />
                         )}
                         <MinusOutlined
                           className="absolute flex items-center justify-center w-5 h-5 bg-red-600 rounded-full cursor-pointer -top-2 -left-2"
                           onClick={() => {
-                            handleMinusTag(tag.name);
+                            handleMinusTag(tag);
                           }}
                         />
                       </button>
@@ -226,7 +257,7 @@ const Lesson6 = () => {
               <label className="text-base opacity-60 mb-5">
                 Show Only Records With
               </label>
-              <AddMoreFilter form={form} />
+              <AddMoreFilter />
             </div>
           </Col>
         </Row>
@@ -260,9 +291,7 @@ const Lesson6 = () => {
               </div>
               <div className="w-full border-solid">
                 <span className=" py-4 border text-bold text-[16px]">Tags</span>
-                <p>
-                  {tagContent ? JSON.stringify(tagContent).slice(1, -1) : ""}
-                </p>
+                <p>{tagContent ? tagContent : ""}</p>
               </div>
             </div>
           </div>

@@ -5,7 +5,7 @@ const Lesson1 = () => {
       <p className="leading-[25px]">
         <b className="text-[16px] font-[700]">1. Khởi tạo react ts với vite</b>{" "}
         :{" "}
-        <a href="https://vitejs.dev/guide/" target="_blank">
+        <a href="https://vitejs.dev/guide/" target="_blank" rel="noreferrer">
           https://vitejs.dev/guide/
         </a>
       </p>
@@ -16,7 +16,7 @@ const Lesson1 = () => {
         :{" "}
         <a
           href="https://github.com/thangpqtechlead/test-node-example/blob/lint/.eslintrc.js"
-          target="_blank"
+          target="_blank" rel="noreferrer"
         >
           https://github.com/thangpqtechlead/test-node-example/blob/lint/.eslintrc.js
         </a>

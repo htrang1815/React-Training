@@ -2,19 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 
 interface filterState {
-  value: any;
+  value: string[];
 }
+const checklistString = localStorage.getItem("checklist");
 
 const initialState: filterState = {
-  value: JSON.parse(localStorage.getItem("checklist")) || [
-    "Id",
-    "Title",
-    "Description",
-    "Price",
-    "Rating",
-    "Brand",
-    "Thumbnail",
-  ],
+  value: JSON.parse(
+    checklistString ||
+      '["Id", "Title", "Description", "Price", "Rating", "Brand", "Thumbnail"]'
+  ),
 };
 
 export const filterSlice = createSlice({

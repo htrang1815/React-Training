@@ -1,11 +1,7 @@
 import { Table } from "antd";
 import Lesson3Data from "../services/Lesson3";
-import {
-  ReactElement,
-  JSXElementConstructor,
-  ReactNode,
-  ReactPortal,
-} from "react";
+// import Lesson8 from "./Lesson8";
+// import { ReactNode, ReactPortal } from "react";
 
 const Lesson3 = () => {
   const data = Lesson3Data();
@@ -30,7 +26,7 @@ const Lesson3 = () => {
       title: "Age",
       dataIndex: "age",
       key: "age",
-      sorter: (a: any, b: any) => a.age - b.age,
+      // sorter: (a: number, b: number) => a.age - b.age,
     },
     {
       title: "Address",
@@ -41,25 +37,15 @@ const Lesson3 = () => {
       title: "Birthday",
       dataIndex: "birthday",
       key: "birthday",
-      render: (birthday: {
-        toLocaleDateString: (
-          arg0: string
-        ) =>
-          | string
-          | number
-          | boolean
-          | ReactElement<any, string | JSXElementConstructor<any>>
-          | Iterable<ReactNode>
-          | ReactPortal
-          | null
-          | undefined;
-      }) => <span>{birthday.toLocaleDateString("en-GB")}</span>,
+      render: (birthday: { toLocaleDateString: (arg0: string) => string }) => (
+        <span>{birthday.toLocaleDateString("en-GB")}</span>
+      ),
     },
     {
       title: "Sex",
       dataIndex: "sex",
       key: "sex",
-      sorter: (a: { sex: string | any[] }, b: { sex: string | any[] }) =>
+      sorter: (a: { sex: string }, b: { sex: string }) =>
         a.sex.length - b.sex.length,
     },
     {
@@ -77,8 +63,8 @@ const Lesson3 = () => {
       dataIndex: "subscriptionTier",
       key: "subscriptionTier",
       sorter: (
-        a: { subscriptionTier: string | any[] },
-        b: { subscriptionTier: string | any[] }
+        a: { subscriptionTier: string },
+        b: { subscriptionTier: string }
       ) => a.subscriptionTier.length - b.subscriptionTier.length,
     },
     {
@@ -93,17 +79,7 @@ const Lesson3 = () => {
       title: "Action",
       dataIndex: "lastName",
       key: "action",
-      render: (
-        lastName:
-          | string
-          | number
-          | boolean
-          | ReactElement<any, string | JSXElementConstructor<any>>
-          | Iterable<ReactNode>
-          | ReactPortal
-          | null
-          | undefined
-      ) => (
+      render: (lastName: string) => (
         <div className="flex items-center justify-between gap-4">
           <div>
             <a>Invite {lastName}</a>
@@ -118,7 +94,8 @@ const Lesson3 = () => {
 
   return (
     <div className="p-8 max-w-full">
-      <Table dataSource={data} columns={columns} />;
+      <Table dataSource={data} columns={columns} pagination={false} />;
+      {/* <Lesson8 total={100} data={data}></Lesson8> */}
     </div>
   );
 };

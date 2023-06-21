@@ -6,20 +6,20 @@ const Lesson4OnBlur = () => {
     register,
     watch,
     control,
-    handleSubmit,
+    // handleSubmit,
     formState: { errors, isValid },
   } = useForm({
     mode: "onBlur",
   });
   const { RangePicker } = DatePicker;
-  const onSubmit = (e: any) => {
-  };
+  // const onSubmit = (e: any) => {
+  // };
   return (
     <>
       <h1 className="p-8 pb-0 text-[16px] font-[700]">
         Thực hành validate form - onBlur
       </h1>
-      <form className="p-8 pb-0 max-w-full " onSubmit={handleSubmit(onSubmit)}>
+      <form className="p-8 pb-0 max-w-full " >
         <div className="grid grid-cols-2 gap-6">
           <div className={`${errors.username ? "error " : ""} username `}>
             <label className="label-input">Username</label>
@@ -155,7 +155,7 @@ const Lesson4OnBlur = () => {
               {...register("website", {
                 pattern: {
                   value:
-                    /^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/,
+                    /^(http(s):\/\/.)[-a-zA-Z0-9@:%._~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_.~#?&//=]*)$/,
                   message: "Không đúng định dạng website",
                 },
                 required: "Không được bỏ trống.",
@@ -264,7 +264,7 @@ const Lesson4OnBlur = () => {
               {...register("facebook", {
                 pattern: {
                   value:
-                    /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/,
+                    /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-.]*\/)*([\w\-.]*)/,
                   message: "Không đúng định dạng facebook",
                 },
                 required: "Không được bỏ trống.",

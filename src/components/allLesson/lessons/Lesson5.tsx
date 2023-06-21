@@ -1,11 +1,17 @@
-import { Pagination, Table } from "antd";
+import { Table } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Lesson5CheckBox from "./Lesson5CheckBox";
 import { useAppSelector } from "../../../hook";
+import usePagination from "../../../hooks/usePagination";
 
 const Lesson5 = () => {
   const filter = useAppSelector((state) => state.filter.value);
+  interface IColumn {
+    title: string;
+    dataIndex: string;
+    key: string;
+  }
   const columns = [
     {
       title: "Id",
@@ -71,34 +77,31 @@ const Lesson5 = () => {
   // const checkList = localStorage.getItem("checklist");
   const [data, setData] = useState([]);
   const [filterColumn, setFilterColumn] = useState([...columns]);
-  const [total, setTotal] = useState(0);
-  const [skip, setSkip] = useState(0);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pageSize: 10,
-  });
-  const getData = async () => {
+  // const [skip, setSkip] = useState(0);
 
-    let skip = pagination.page * pagination.pageSize - pagination.pageSize;
-    setSkip(skip);
+  const { pagination, PaginationUI, setPagination } = usePagination();
+  const getData = async () => {
+    const skip =
+      (Number(pagination.currentPage) - 1) * Number(pagination.pageSize);
+    // setSkip(skip);
     await axios
       .get(
         `https://dummyjson.com/products?skip=${skip}&limit=${pagination.pageSize}`
       )
       .then((res) => {
-        const data = res.data.products;
-        const total = res.data.total;
+        const { products: data, total } = res.data;
+        console.log(data, total);
         setData(data);
-        setTotal(total);
+        setPagination({ ...pagination, totalRecord: total });
       })
       .catch((error) => console.log(error));
   };
 
   const handleFilterColumns = () => {
-    let data: any[] = [];
-    for (let i = 0; i < filter.length; i++) {
+    const data: IColumn[] = [];
+    for (const element of filter) {
       columns.forEach((column) => {
-        if (column.key.toLowerCase() === filter[i].toLowerCase()) {
+        if (column.key.toLowerCase() === element.toLowerCase()) {
           data.push(column);
         }
       });
@@ -106,33 +109,28 @@ const Lesson5 = () => {
     setFilterColumn(data);
   };
 
-  const handlePaginationChange = (page: any, pageSize: any) => {
-    setPagination({ page, pageSize });
-  };
-
-  const showTotal = (total: any, range: any[]) => {
-    return `${range[0]}-${range[1]} of ${total} items`;
-  };
-
   useEffect(() => {
     getData();
     handleFilterColumns();
-  }, [pagination, skip, filter]);
-
-  // //console.log("filterColumn", filterColumn);
+    console.log("effect");
+  }, [pagination.currentPage, pagination.pageSize]);
 
   return (
-    <div className="p-8 max-w-full relative">
-      <Lesson5CheckBox></Lesson5CheckBox>
+    <div className="p-8 max-w-full ">
+      <div className="flex flex-row justify-end items-center mb-5 gap-5">
+        <Lesson5CheckBox></Lesson5CheckBox>
+        <PaginationUI className={" mr-0 "} />
+      </div>
       <Table
         dataSource={data}
-        pagination={{
-          total,
-          position: ["topRight"],
-          showSizeChanger: true,
-          showTotal,
-          onChange: handlePaginationChange,
-        }}
+        // pagination={{
+        //   total,
+        //   position: ["topRight"],
+        //   showSizeChanger: true,
+        //   showTotal,
+        //   onChange: handlePaginationChange,
+        // }}
+        pagination={false}
         columns={filterColumn}
       ></Table>
     </div>

@@ -1,28 +1,28 @@
 import { useState } from "react";
-import { Checkbox, Divider, Select } from "antd";
+import { Checkbox, Select } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { useAppDispatch } from "../../../hook";
 import { setFilter } from "../../../features/lesson5/filterSlice";
-
+const PLAIN_OPTIONS = [
+  "Id",
+  "Title",
+  "Description",
+  "Price",
+  "DiscountPercentage",
+  "Rating",
+  "Stock",
+  "Brand",
+  "Category",
+  "Thumbnail",
+  "Images",
+];
 const Lesson5CheckBox = () => {
   const [isShow, setIsShow] = useState(false);
   const CheckboxGroup = Checkbox.Group;
   const dispatch = useAppDispatch();
 
-  const plainOptions = [
-    "Id",
-    "Title",
-    "Description",
-    "Price",
-    "DiscountPercentage",
-    "Rating",
-    "Stock",
-    "Brand",
-    "Category",
-    "Thumbnail",
-    "Images",
-  ];
+  const [plainOptions, setPlainOptions] = useState(PLAIN_OPTIONS);
 
   const restoreDefault = [
     "Id",
@@ -53,12 +53,24 @@ const Lesson5CheckBox = () => {
     localStorage.setItem("checklist", JSON.stringify(checkedList));
   };
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value?.length !== 0) {
+      const searchColumn = plainOptions.filter((item) =>
+        item.toLowerCase().includes(e.target.value.toLowerCase())
+      );
+      setPlainOptions(searchColumn);
+    }else {
+      setPlainOptions(PLAIN_OPTIONS);
+    }
+
+  };
+
   const handleShow = () => {
     setIsShow(!isShow);
   };
 
   return (
-    <div className="absolute top-[2.65%] right-[47%] z-30">
+    <div className="h-full">
       <Select
         defaultValue="Columns"
         style={{ width: 160 }}
@@ -74,6 +86,7 @@ const Lesson5CheckBox = () => {
               type="text"
               placeholder="Search"
               className="py-[10px] text-[14px] px-4 border border-black border-opacity-30 w-full"
+              onChange={handleSearch}
             />
           </div>
           <Checkbox

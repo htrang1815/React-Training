@@ -1,9 +1,8 @@
 import { DeleteFilled } from "@ant-design/icons";
 import { Form, Input, Radio, Select, Space } from "antd";
 
-const AddMoreFilter = ({ form }: { form: any }) => {
-  const { Option } = Select;
 
+const AddMoreFilter = () => {
   const columns = [
     {
       value: "firstname",
@@ -103,7 +102,7 @@ const AddMoreFilter = ({ form }: { form: any }) => {
   ];
 
   return (
-    <Form.List name="filter">
+    <Form.List name="filter" >
       {(fields, { add, remove }) => {
         return (
           <>
